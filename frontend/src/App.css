@@ -1,14 +1,32 @@
+:root {
+  --bg: #14171c;
+  --panel: #191d24;
+  --border: #2a2e36;
+  --text: #f1efea;
+  --text-muted: #8a8f98;
+  --accent: #e8a33d;
+  --error: #d9635b;
+
+  --font: -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+@media (max-width: 1024px) {
+  :root {
+    font-size: 16px;
+  }
+}
+
 body {
   margin: 0;
-  background: #14171c;
-  color: #f1efea;
-  font-family: -apple-system, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
   line-height: 1.5;
 }
 
 .connekt-outreach-header {
   padding: 16px 24px;
-  border-bottom: 1px solid #2a2e36;
+  border-bottom: 1px solid var(--border);
 }
 
 .logo {
@@ -29,16 +47,16 @@ body {
 .search-box label {
   margin-top: 16px;
   font-size: 13px;
-  color: #8a8f98;
+  color: var(--text-muted);
 }
 
 .search-box input {
   margin-top: 6px;
   padding: 10px;
-  background: #191d24;
-  border: 1px solid #2a2e36;
+  background: var(--panel);
+  border: 1px solid var(--border);
   border-radius: 4px;
-  color: #f1efea;
+  color: var(--text);
   font-size: 15px;
 }
 
@@ -47,21 +65,21 @@ body {
   padding: 10px 18px;
   border: none;
   border-radius: 4px;
-  background: #e8a33d;
+  background: var(--accent);
   font-weight: 600;
   cursor: pointer;
   align-self: flex-start;
 }
 
 .search-box button:disabled {
-  background: #2a2e36;
-  color: #8a8f98;
+  background: var(--border);
+  color: var(--text-muted);
   cursor: not-allowed;
 }
 
 .error {
   margin-top: 20px;
-  color: #d9635b;
+  color: var(--error);
 }
 
 .results {
@@ -72,5 +90,5 @@ body {
 
 .results li {
   padding: 10px 0;
-  border-bottom: 1px solid #2a2e36;
+  border-bottom: 1px solid var(--border);
 }

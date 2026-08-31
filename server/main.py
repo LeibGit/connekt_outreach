@@ -20,6 +20,8 @@ app.include_router(get_cron_router(), prefix="/crons")
 origins = [
     "http://localhost",
     "http://localhost:5173",
+    "https://connekt-outreach-two.vercel.app/", 
+    "https://connekt-outreach-two.vercel.app"
 ]
 
 app.add_middleware(
