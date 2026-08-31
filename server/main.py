@@ -38,9 +38,10 @@ def on_startup():
     print("creating database and models")
     create_db_and_tables()
 
-@app.get("/")
+
+@app.api_route("/", methods=["GET", "HEAD"])
 def read_root():
-    return {"Connekt": "Active"}  
+    return {"Connekt": "Active"}
 
 
 @crons.cron("*/5 * * * *", name="periodic_cleanup")
