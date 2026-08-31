@@ -7,7 +7,7 @@ from .database.database import engine
 from .database.models import OutreachProspect, AllProspect
 from .emails.send import outreach_message_one, outreach_message_two, outreach_message_three
 from sqlmodel import select, Session
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta
 
 app = FastAPI()
 
@@ -20,8 +20,7 @@ app.include_router(get_cron_router(), prefix="/crons")
 origins = [
     "http://localhost",
     "http://localhost:5173",
-    "https://connekt-outreach-two.vercel.app/", 
-    "https://connekt-outreach-two.vercel.app"
+    "https://connekt-outreach-two.vercel.app",
 ]
 
 app.add_middleware(
@@ -56,7 +55,7 @@ def email_outreach():
         prospect_list_statement = select(AllProspect)
         prospect_list = db.exec(prospect_list_statement).all()
 
-        two_days_ago = datetime.now(timezone.utc) - timedelta(days=2)
+        two_days_ago = datetime.utcnow() - timedelta(days=2)
 
         for prospect in prospects:
             if prospect.status == "active":
@@ -68,7 +67,7 @@ def email_outreach():
                     )
                     prospect.outreach_one = True
                     print("message one sent")
-                    prospect.one_created_at = datetime.now(timezone.utc)
+                    prospect.one_created_at = datetime.utcnow()
                 elif not prospect.outreach_two:
                     if prospect.one_created_at < two_days_ago:
                         new_message = outreach_message_two(
@@ -78,8 +77,7 @@ def email_outreach():
                         )
                         prospect.outreach_two = True
                         print("message two sent")
-                        prospect.two_created_at = datetime.now(timezone.utc)
-
+                        prospect.two_created_at = datetime.utcnow()
                     else:
                         continue
                 elif prospect.outreach_one and prospect.outreach_two and not prospect.outreach_three:
@@ -91,9 +89,9 @@ def email_outreach():
                         )
                         print("message three sent")
                         prospect.outreach_three = True
-                        prospect.outreach_three_time = datetime.now(timezone.utc)
+                        prospect.outreach_three_time = datetime.utcnow()
                         prospect_list.outreached_emails.append(prospect.recommended_personal_email)
                         prospect.status = "completed"
                     else:
                         continue
-        db.commit() 
+        db.commit()
