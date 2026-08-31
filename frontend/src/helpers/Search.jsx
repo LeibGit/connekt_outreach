@@ -1,4 +1,4 @@
-const API_ENDPOINT = "http://localhost:8000"
+const API_ENDPOINT = "https://connekt-outreach.onrender.com"
 
 export async function search(formData) {
     try {
