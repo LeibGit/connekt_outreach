@@ -3,6 +3,7 @@ import anthropic
 from dotenv import load_dotenv
 from ..schema.person import PersonSearch
 from ..schema.search import SearchIntent
+from ..helpers.elastic_search import build_search
 
 load_dotenv()
 
@@ -18,8 +19,8 @@ tools = [
     }
 ]
 
-def get_intent(query: str = None):
-    try: 
+def build_intent(query: str = None):
+    try:
         response = client.messages.create(
             model="claude-opus-5",
             max_tokens=1000,
@@ -33,7 +34,7 @@ def get_intent(query: str = None):
 
         intent = SearchIntent(**response.content[0].input)
         print(intent)
-
+        
         return {
             "success": True,
             "data": intent
@@ -45,4 +46,3 @@ def get_intent(query: str = None):
             "success": False,
             "error": e
         }
-    

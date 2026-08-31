@@ -18,8 +18,13 @@ function App() {
             placeholder='enter target description...' 
             required
             />
+          <label>How many candidates should be outreach too.</label>
+          <input 
+            type='number'
+            placeholder='enter qty...'
+            required
+          />
           <button type='submit'>Search</button>
-
         </form>
       </section>
     </>
