@@ -7,7 +7,7 @@ function App() {
     async (previousState, formData) => {
       return await search(formData);
     },
-    null // initial state
+    null
   );
 
   return (

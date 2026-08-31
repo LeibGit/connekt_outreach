@@ -1,15 +1,25 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from .routers import search
-from .database.database import create_db_and_tables, SessionDep
-from fastapi_crons import Crons, get_cron_router
-from .database.database import engine
-from .database.models import OutreachProspect, AllProspect
-from .emails.send import outreach_message_one, outreach_message_two, outreach_message_three
-from sqlmodel import select, Session
+from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
 
-app = FastAPI()
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi_crons import Crons, get_cron_router
+from sqlmodel import select, Session
+
+from .routers import search
+from .database.database import create_db_and_tables, SessionDep, engine
+from .database.models import OutreachProspect, AllProspect
+from .emails.send import outreach_message_one, outreach_message_two, outreach_message_three
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("creating database and models")
+    create_db_and_tables()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 crons = Crons(app)
 
@@ -30,12 +40,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.on_event("startup")
-def on_startup():
-    print("creating database and models")
-    create_db_and_tables()
 
 
 @app.api_route("/", methods=["GET", "HEAD"])
@@ -72,7 +76,7 @@ def email_outreach():
                     if prospect.one_created_at < two_days_ago:
                         new_message = outreach_message_two(
                             company_name=prospect.job_company_name,
-                            name=prospect.name, 
+                            name=prospect.name,
                             email=prospect.recommended_personal_email
                         )
                         prospect.outreach_two = True
@@ -84,7 +88,7 @@ def email_outreach():
                     if prospect.two_created_at < two_days_ago:
                         new_message = outreach_message_three(
                             company_name=prospect.job_company_name,
-                            name=prospect.name, 
+                            name=prospect.name,
                             email=prospect.recommended_personal_email
                         )
                         print("message three sent")
