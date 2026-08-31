@@ -22,6 +22,12 @@ async def candidate_search(
     search: UserQuery
 ):
     try:
+        print(
+            f"""
+                search: {search.query}
+                qty: {search.qty}
+            """
+        )
         intent = build_intent(query=search.query)
         if not (intent["success"]):
             raise HTTPException(status_code=400, detail="build intent func failed")
@@ -33,27 +39,25 @@ async def candidate_search(
             raise HTTPException(status_code=400, detail="pdl search func failed")
 
         print(pdl_response["data"])
-
         for person in pdl_response["data"]:
-            unique_id = uuid.uuid4()
-            for person in pdl_response["data"]:
-                prospect = OutreachProspect(
-                    name=person["first_name"], 
-                    job_company_name=person["job_company_name"],
-                    facebook_url=person["facebook_url"], 
-                    mobile_phone=person["mobile_phone"],
-                    personal_emails=person["personal_emails"],
-                    linkedin_url=person["linkedin_url"],
-                    recommended_personal_email=person["recommended_personal_email"],
-                    work_email=person["work_email"], 
-                )
-                db.add(prospect)
-                print(f"prospect added to database: {prospect}")
-                db.commit()
+            prospect = OutreachProspect(
+                name=person["first_name"], 
+                job_company_name=person["job_company_name"],
+                facebook_url=person["facebook_url"], 
+                mobile_phone=person["mobile_phone"],
+                personal_emails=person["personal_emails"],
+                linkedin_url=person["linkedin_url"],
+                recommended_personal_email=person["recommended_personal_email"],
+                work_email=person["work_email"], 
+            )
+            db.add(prospect)
+            print(f"prospect added to database: {prospect}")
+            db.commit()
 
         return {
             "success": True, 
-            "data": pdl_response["data"]
+            "data": pdl_response["data"], 
+            "message": f"{search.qty} candidates have been sent a message."
         }
         
     except Exception as e:

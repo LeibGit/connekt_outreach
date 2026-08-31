@@ -17,17 +17,17 @@ class OutreachProspect(SQLModel, table=True):
     outreach_one: bool = False
     one_created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
-        sa_column=Column(DateTime(timezone=True), nullable=False)
+        sa_column=Column(DateTime(timezone=False), nullable=False)
     )
     outreach_two: bool = False
     two_created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
-        sa_column=Column(DateTime(timezone=True), nullable=False)
+        sa_column=Column(DateTime(timezone=False), nullable=False)
     )
     outreach_three: bool = False
     outreach_three_time: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
-        sa_column=Column(DateTime(timezone=True), nullable=False)
+        sa_column=Column(DateTime(timezone=False), nullable=False)
     )
     status: str = "active"
 

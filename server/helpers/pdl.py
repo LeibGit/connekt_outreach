@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def pdl_search(es_query, qty: int = 25):
+def pdl_search(es_query, qty):
   # Create a client, specifying your API key
   try:
     print(os.environ.get("PDL_KEY"))

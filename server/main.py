@@ -19,7 +19,7 @@ app.include_router(get_cron_router(), prefix="/crons")
 
 origins = [
     "http://localhost",
-    "http://localhost/5173",
+    "http://localhost:5173",
 ]
 
 app.add_middleware(
@@ -61,7 +61,7 @@ def email_outreach():
                     new_message = outreach_message_one(
                         company_name=prospect.job_company_name,
                         name=prospect.name,
-                        # email=prospect.recommended_personal_email
+                        email=prospect.recommended_personal_email
                     )
                     prospect.outreach_one = True
                     print("message one sent")
@@ -71,7 +71,7 @@ def email_outreach():
                         new_message = outreach_message_two(
                             company_name=prospect.job_company_name,
                             name=prospect.name, 
-                            # email=prospect.recommended_personal_email
+                            email=prospect.recommended_personal_email
                         )
                         prospect.outreach_two = True
                         print("message two sent")
@@ -84,7 +84,7 @@ def email_outreach():
                         new_message = outreach_message_three(
                             company_name=prospect.job_company_name,
                             name=prospect.name, 
-                            # email=prospect.recommended_personal_email
+                            email=prospect.recommended_personal_email
                         )
                         print("message three sent")
                         prospect.outreach_three = True

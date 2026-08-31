@@ -1,8 +1,8 @@
 const API_ENDPOINT = "http://localhost:800"
 
-export default function search_post(query) {
+export default async function search_post(query) {
     try {
-        const response = fetch(`${API_ENDPOINT}`, {
+        const response = await fetch(`${API_ENDPOINT}`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json"
