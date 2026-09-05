@@ -16,6 +16,7 @@ dependencies = [
     "ruff>=0.16.4",
     "sqlalchemy>=2.0.52",
     "sqlmodel>=0.0.39",
+    "zerobouncesdk>=2.2.4",
 ]
 
 [project.scripts]

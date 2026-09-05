@@ -62,12 +62,12 @@ def email_outreach():
         two_days_ago = datetime.utcnow() - timedelta(days=2)
 
         for prospect in prospects:
-            if prospect.status == "active":
+            if prospect.status == "active" and prospect.work_email:
                 if not prospect.outreach_one:
                     new_message = outreach_message_one(
                         company_name=prospect.job_company_name,
                         name=prospect.name,
-                        email=prospect.recommended_personal_email
+                        email=prospect.work_email
                     )
                     prospect.outreach_one = True
                     print("message one sent")
@@ -77,7 +77,7 @@ def email_outreach():
                         new_message = outreach_message_two(
                             company_name=prospect.job_company_name,
                             name=prospect.name,
-                            email=prospect.recommended_personal_email
+                            email=prospect.work_email
                         )
                         prospect.outreach_two = True
                         print("message two sent")
@@ -89,7 +89,7 @@ def email_outreach():
                         new_message = outreach_message_three(
                             company_name=prospect.job_company_name,
                             name=prospect.name,
-                            email=prospect.recommended_personal_email
+                            email=prospect.work_email
                         )
                         print("message three sent")
                         prospect.outreach_three = True
