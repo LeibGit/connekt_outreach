@@ -13,6 +13,7 @@ def build_search(intent: SearchIntent) -> dict:
     if intent.job_title:
         must.append({"match": {"job_title.text": intent.job_title}})
     if intent.job_title_role:
-        must.append({"term": {"job_title_role": intent.job_title_role.lower()}})
+        normalized = intent.job_title_role.lower().replace(" ", "_")
+        must.append({"term": {"job_title_role": normalized}})
 
     return {"query": {"bool": {"must": must}}}
