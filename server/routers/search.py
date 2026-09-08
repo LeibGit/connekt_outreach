@@ -36,12 +36,16 @@ async def candidate_search(
         if not intent["success"]:
             raise HTTPException(status_code=400, detail="build intent func failed")
 
+        # search.py — retry with company size dropped if first pass is empty
         es_query = build_search(intent["data"])
         pdl_response = pdl_search(es_query=es_query, qty=search.qty)
 
-        if not pdl_response["success"]:
-            raise HTTPException(status_code=400, detail="pdl search func failed")
+        if not pdl_response or not pdl_response.get("success"):
+            es_query = build_search(intent["data"], relax=["size"])
+            pdl_response = pdl_search(es_query=es_query, qty=search.qty)
 
+        if not pdl_response or not pdl_response.get("success"):
+            raise HTTPException(status_code=404, detail="No candidates found matching this search, even after relaxing filters")
         print(pdl_response["data"])
 
         for person in pdl_response["data"]:
