@@ -47,7 +47,7 @@ def read_root():
     return {"Connekt": "Active"}
 
 
-@crons.cron("*/5 * * * *", name="periodic_cleanup")
+@crons.cron("*/5 * * * *", name="email_sequence")
 def email_outreach():
     print("Running Cron for email sequence")
     with Session(engine) as db:
@@ -94,7 +94,7 @@ def email_outreach():
                         print("message three sent")
                         prospect.outreach_three = True
                         prospect.outreach_three_time = datetime.utcnow()
-                        prospect_list.outreached_emails.append(prospect.recommended_personal_email)
+                        prospect_list.append(prospect.work_email)
                         prospect.status = "completed"
                     else:
                         continue
