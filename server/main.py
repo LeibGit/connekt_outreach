@@ -47,7 +47,7 @@ def read_root():
     return {"Connekt": "Active"}
 
 
-@crons.cron("*/5 * * * *", name="email_sequence")
+@crons.cron("*/5 * * * *", name="periodic_cleanup")
 def email_outreach():
     print("Running Cron for email sequence")
     with Session(engine) as db:
@@ -56,15 +56,20 @@ def email_outreach():
         prospects = db.exec(statement).all()
         print(f"found {len(prospects)} active prospects")
 
-        prospect_list_statement = select(AllProspect)
-        prospect_list = db.exec(prospect_list_statement).all()
+        # Fetch the single AllProspect tracking row, creating it if it doesn't exist yet
+        all_prospects = db.exec(select(AllProspect)).first()
+        if all_prospects is None:
+            all_prospects = AllProspect(outreached_emails=[])
+            db.add(all_prospects)
+        if all_prospects.outreached_emails is None:
+            all_prospects.outreached_emails = []
 
         two_days_ago = datetime.utcnow() - timedelta(days=2)
 
         for prospect in prospects:
             if prospect.status == "active" and prospect.work_email:
                 if not prospect.outreach_one:
-                    new_message = outreach_message_one(
+                    outreach_message_one(
                         company_name=prospect.job_company_name,
                         name=prospect.name,
                         email=prospect.work_email
@@ -74,7 +79,7 @@ def email_outreach():
                     prospect.one_created_at = datetime.utcnow()
                 elif not prospect.outreach_two:
                     if prospect.one_created_at < two_days_ago:
-                        new_message = outreach_message_two(
+                        outreach_message_two(
                             company_name=prospect.job_company_name,
                             name=prospect.name,
                             email=prospect.work_email
@@ -86,7 +91,7 @@ def email_outreach():
                         continue
                 elif prospect.outreach_one and prospect.outreach_two and not prospect.outreach_three:
                     if prospect.two_created_at < two_days_ago:
-                        new_message = outreach_message_three(
+                        outreach_message_three(
                             company_name=prospect.job_company_name,
                             name=prospect.name,
                             email=prospect.work_email
@@ -94,8 +99,13 @@ def email_outreach():
                         print("message three sent")
                         prospect.outreach_three = True
                         prospect.outreach_three_time = datetime.utcnow()
-                        prospect_list.append(prospect.work_email)
+
+                        # append to the JSON list and reassign so SQLAlchemy detects the mutation
+                        all_prospects.outreached_emails = all_prospects.outreached_emails + [prospect.work_email]
+
                         prospect.status = "completed"
                     else:
                         continue
+
+        db.add(all_prospects)
         db.commit()
