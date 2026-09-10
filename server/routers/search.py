@@ -91,7 +91,7 @@ async def candidate_search(
         return {
             "success": True,
             "data": pdl_response["data"],
-            "message": f"{search.qty} candidates have been sent a message."
+            "message": f"{len(pdl_response['data'])} candidates added to the outreach queue."
         }
 
     except HTTPException:

@@ -67,38 +67,50 @@ def email_outreach():
         two_days_ago = datetime.utcnow() - timedelta(days=2)
 
         for prospect in prospects:
-            if prospect.status == "active" and prospect.work_email:
+            if not (prospect.status == "active" and prospect.work_email):
+                continue
+
+            try:
                 if not prospect.outreach_one:
-                    outreach_message_one(
+                    result = outreach_message_one(
                         company_name=prospect.job_company_name,
                         name=prospect.name,
                         email=prospect.work_email
                     )
+                    if not result["success"]:
+                        print(f"message one NOT sent to {prospect.work_email}: {result['error']}")
+                        continue
                     prospect.outreach_one = True
-                    print("message one sent")
                     prospect.one_created_at = datetime.utcnow()
+                    print(f"message one sent to {prospect.work_email}")
                 elif not prospect.outreach_two:
                     if prospect.one_created_at < two_days_ago:
-                        outreach_message_two(
+                        result = outreach_message_two(
                             company_name=prospect.job_company_name,
                             name=prospect.name,
                             email=prospect.work_email
                         )
+                        if not result["success"]:
+                            print(f"message two NOT sent to {prospect.work_email}: {result['error']}")
+                            continue
                         prospect.outreach_two = True
-                        print("message two sent")
                         prospect.two_created_at = datetime.utcnow()
+                        print(f"message two sent to {prospect.work_email}")
                     else:
                         continue
                 elif prospect.outreach_one and prospect.outreach_two and not prospect.outreach_three:
                     if prospect.two_created_at < two_days_ago:
-                        outreach_message_three(
+                        result = outreach_message_three(
                             company_name=prospect.job_company_name,
                             name=prospect.name,
                             email=prospect.work_email
                         )
-                        print("message three sent")
+                        if not result["success"]:
+                            print(f"message three NOT sent to {prospect.work_email}: {result['error']}")
+                            continue
                         prospect.outreach_three = True
                         prospect.outreach_three_time = datetime.utcnow()
+                        print(f"message three sent to {prospect.work_email}")
 
                         # append to the JSON list and reassign so SQLAlchemy detects the mutation
                         all_prospects.outreached_emails = all_prospects.outreached_emails + [prospect.work_email]
@@ -106,6 +118,9 @@ def email_outreach():
                         prospect.status = "completed"
                     else:
                         continue
+            except Exception as e:
+                print(f"outreach failed for {prospect.work_email}: {e}")
+                continue
 
         db.add(all_prospects)
         db.commit()
