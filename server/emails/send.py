@@ -15,6 +15,7 @@ def outreach_message_one(name: str, company_name: str, email: str) -> dict:
         "from": "support@tryconnekt.com",
         "to": f"{email}",
         "subject": f"Sourcing at {company_name}",
+        "h:Reply-To": "support@tryconnekt.com", 
         "html": f"""
         <html>
             <body>
